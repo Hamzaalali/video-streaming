@@ -5,14 +5,16 @@ import com.example.authenticationservice.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.StreamingHttpOutputMessage;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.example.authenticationservice.controller.*;
 
 @RestController
 @RequestMapping(path = "/auth/")
@@ -20,32 +22,22 @@ import java.util.Map;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
-    @PostMapping(path="/login")
-    public ResponseEntity<Object> login(@RequestBody User user) {
-    boolean isValid = this.authenticationService.login(user);
-        String value;
-        String message;
-        int statusCode;
-        if(isValid){
-            message="accessToken";
-            value= this.authenticationService.getAccessToken(user.getUserName());
-            statusCode=200;
-        }else{
-            message="error";
-            value="invalid credentials";
-            statusCode=401;
-        }
-        Map<String,String>returnObject=new HashMap<>();
-        returnObject.put(message,value);
-    return new ResponseEntity<>(returnObject, HttpStatus.valueOf(statusCode));
+    @PostMapping("validate-token")
+    public ResponseEntity<Object> validateRequest(HttpServletRequest request, HttpServletResponse response,@RequestBody AuthRequest authRequest) throws ServletException, IOException {
+        boolean isValid=this.authenticationService.isValidAccessToken(authRequest.getAccessToken());
+        Map<String ,Boolean> responseMap=new HashMap<>();
+        responseMap.put("isValid",isValid);
+        return new ResponseEntity<>(responseMap,HttpStatus.ACCEPTED);
     }
-    @PostMapping(path = "token")
-    public ResponseEntity<Object>validateAccessToken(HttpServletRequest request){
-        String accessToken=request.getHeader("Authentication");
-        boolean isValid=this.authenticationService.isValidAccessToken(accessToken);
+    @PostMapping(path="/login")
+    public ResponseEntity<Object> login( @RequestBody User user) {
+        boolean isValid = this.authenticationService.login(user);
+        Map<String ,Object> responseMap=new HashMap<>();
         if(isValid){
-            return new ResponseEntity<>("valid access token",HttpStatus.ACCEPTED);
+            String accessToken= authenticationService.getAccessToken(user.getUserName());
+            responseMap.put("accessToken",accessToken);
         }
-        return new ResponseEntity<>("invalid access token",HttpStatus.UNAUTHORIZED);
+        responseMap.put("isValid",isValid);
+        return new ResponseEntity<>(responseMap,HttpStatus.ACCEPTED);
     }
 }

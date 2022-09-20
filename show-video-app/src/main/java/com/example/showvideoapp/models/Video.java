@@ -1,24 +1,23 @@
-package com.example.fileservice.fileuploading;
+package com.example.showvideoapp.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import javax.transaction.Transactional;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Transactional
 @Entity
-public class File {
+@Table(name="video")
+public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
     private String url;
-
+    private String videoCoverUrl;
+    private String name;
 }

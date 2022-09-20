@@ -21,7 +21,7 @@ public class AuthenticationService {
         Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
         return JWT.create()
             .withSubject(username)
-            .withExpiresAt(new Date(System.currentTimeMillis() + 10000 * 60 * 1000))
+            .withExpiresAt(new Date(System.currentTimeMillis() +  1000*60*5))
             .sign(algorithm);
     }
 
