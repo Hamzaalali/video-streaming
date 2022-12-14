@@ -1,33 +1,43 @@
 version: "3"
 services:
  mysql:
-  container_name: video-streaming-mysql
+  container_name: mysql
   image: mysql
   environment:
     - MYSQL_ROOT_PASSWORD=root
     - MYSQL_DATABASE=root
   ports:
     - 8085:3306
-  expose:
-      - 8085
+  healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u $$MYSQL_USER --password=$$MYSQL_PASSWORD
  authentication-service:
-  container_name: video-streaming-authentication-service
-  image: authentication-service
+  container_name: authentication-service
+  build: ./authentication-service
   ports :
    - 8080:8080
-  expose:
-    - 8080
-  depends_on:
-   mysql:
-    condition: service_started
- file-upload-service:
-    container_name: video-streaming-file-upload-service
-    image: file-upload-service
+ file-service:
+    container_name: file-service
+    build: ./file-service
     ports :
     - 8081:8081
-    expose:
-      - 8081
+    volumes:
+      - storage:/storage
+ upload-video-app:
+    container_name: upload-video-app
+    build: ./upload-video-app
+    ports :
+    - 8082:8082
     depends_on:
      mysql:
-      condition: service_started
+      condition: service_healthy
+ stream-video-app:
+  container_name: stream-video-app
+  build: ./show-video-app
+  ports :
+  - 8083:8083
 
+  depends_on:
+    mysql:
+      condition: service_healthy
+volumes:
+  storage:

@@ -126,7 +126,7 @@
         <button type="submit">Upload</button>
     </div>
 </form>
-<a href="http://localhost:8083/api/video">
+<a href="http://host.docker.internal:8083/api/video">
     <div class="nextpage">
         <p style="display:inline;position: relative; bottom: 10px; font-size: 20px;">
             Show Video Service

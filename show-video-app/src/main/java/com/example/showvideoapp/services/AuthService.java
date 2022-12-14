@@ -28,7 +28,7 @@ public class AuthService {
     public boolean isAuthenticated(AuthRequest authRequest){
         boolean isValid;
         try{
-            String url = "http://localhost:8080/api/auth/validate-token";
+            String url = "http://host.docker.internal:8080/api/auth/validate-token";
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -46,7 +46,7 @@ public class AuthService {
         boolean isValid;
 
         try{
-            String url = "http://localhost:8080/api/auth/login";
+            String url = "http://host.docker.internal:8080/api/auth/login";
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             ObjectMapper objectMapper = new ObjectMapper();

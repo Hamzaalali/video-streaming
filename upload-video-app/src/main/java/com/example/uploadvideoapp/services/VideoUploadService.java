@@ -17,6 +17,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class VideoUploadService {
@@ -25,8 +27,12 @@ public class VideoUploadService {
     public void uploadVideo(VideoUploadRequest videoUploadRequest)  {
         try{
             ObjectMapper objectMapper = new ObjectMapper();
-            String videoUploadResponse=uploadFile(videoUploadRequest.getVideo());
-            String videoCoverUploadResponse=uploadFile(videoUploadRequest.getVideoCover());
+            UUID uuid = UUID.randomUUID();
+            String requestUrl="http://host.docker.internal:8081/api/file/upload/video";
+            String videoUploadResponse=uploadFile(videoUploadRequest.getVideo(),uuid.toString(),requestUrl);
+            uuid = UUID.randomUUID();
+            requestUrl="http://host.docker.internal:8081/api/file/upload/photo";
+            String videoCoverUploadResponse=uploadFile(videoUploadRequest.getVideoCover(),uuid.toString(),requestUrl);
             JsonNode videoUploadResponseTree=objectMapper.readTree(videoUploadResponse);
             JsonNode videoCoverUploadResponseTree=objectMapper.readTree(videoCoverUploadResponse);
             String url= videoUploadResponseTree.get("url").asText();
@@ -39,15 +45,15 @@ public class VideoUploadService {
         }catch (Exception e){
         }
     }
-    private String uploadFile(MultipartFile file) throws JsonProcessingException {
-        String requestUrl="http://localhost:8081/api/file/upload";
+    private String uploadFile(MultipartFile file,String fileName,String url) throws JsonProcessingException {
         MultiValueMap<String,Object > body=new LinkedMultiValueMap<>();
-        body.add( "video",file.getResource());
+        body.add( "file",file.getResource());
+        body.add( "fileName",fileName);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
         HttpEntity<MultiValueMap<String, Object>> requestEntity
                 = new HttpEntity<>(body, headers);
-        String response=postRequest.request(requestUrl,requestEntity);
+        String response=postRequest.request(url,requestEntity);
         return response;
     }
 }

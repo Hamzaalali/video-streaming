@@ -102,7 +102,7 @@
     %>
 
 </div>
-<a href="http://localhost:8082/api/video/upload">
+<a href="http://host.docker.internal:8082/api/video/upload">
     <div class="nextpage">
 
         <span>&#8592;</span>

@@ -9,5 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @Data
 public class FileUploadRequest {
-    private MultipartFile video;
+    private MultipartFile file;
+    private String fileName;
 }

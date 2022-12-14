@@ -54,6 +54,7 @@
     </dependencies>
 
     <build>
+        <finalName>upload-video-app</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
